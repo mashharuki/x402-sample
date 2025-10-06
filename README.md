@@ -4,11 +4,39 @@ This directory contains a collection of TypeScript examples demonstrating how to
 
 ## Setup
 
+### Option 1: Local Development
+
 Before running any examples, you need to install dependencies and build the packages:
 
 ```bash
 pnpm install
 pnpm build
+```
+
+### Option 2: Docker
+
+You can run the examples using Docker and Docker Compose:
+
+1. Ensure Docker and Docker Compose are installed on your system
+2. Copy `.env-local` to `.env` in each service directory and configure your environment variables
+3. Build and run with Docker Compose:
+
+```bash
+# Start all services (currently only express-server starts by default)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+```
+
+For the MCP client (which requires interactive mode):
+
+```bash
+# Start the express server first
+docker-compose up -d express-server
 ```
 
 ## Example Structure

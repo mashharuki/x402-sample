@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # Express server for serving paid API endpoints
+  express-server:
+    build:
+      context: .
+      dockerfile: servers/express/Dockerfile
+    container_name: x402-express-server
+    ports:
+      - "4021:4021"
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - servers/express/.env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider --server-response http://localhost:4021/weather 2>&1 | grep -q 'HTTP.*[24]0[0-9]'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - x402-network
+
+  # MCP client (runs as stdio service, typically used with Claude Desktop)
+  # This service is profile-based and won't start by default
+  # Use: docker-compose --profile mcp up mcp-client
+  mcp-client:
+    build:
+      context: .
+      dockerfile: mcp/Dockerfile
+    container_name: x402-mcp-client
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - mcp/.env
+    stdin_open: true
+    tty: true
+    depends_on:
+      - express-server
+    networks:
+      - x402-network
+    profiles:
+      - mcp
+
+networks:
+  x402-network:
+    driver: bridge
