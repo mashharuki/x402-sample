@@ -1,4 +1,4 @@
 packages:
   - "servers/*"
-  - "mpc"
+  - "mcp"
   - "../../typescript/packages/*"
